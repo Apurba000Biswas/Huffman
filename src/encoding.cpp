@@ -1,10 +1,8 @@
 
 #include "encoding.h"
 #include "pqueue.h"
-// TODO: include any other headers you need
 
-
-PriorityQueue<HuffmanNode*> getPQueue(const Map<int, int>& freqTable);
+HuffmanNode* buildTreeHelper(PriorityQueue<HuffmanNode*>& pqueue);
 
 // STEP : 01
 Map<int, int> buildFrequencyTable(istream& input) {
@@ -31,27 +29,34 @@ Map<int, int> buildFrequencyTable(istream& input) {
 // STEP : 02
 HuffmanNode* buildEncodingTree(const Map<int, int>& freqTable) {
 
-    PriorityQueue<HuffmanNode*> pqueue = getPQueue(freqTable);
-    //cout << pqueue << endl;
-
-    while(!pqueue.isEmpty()){
-        cout << "** Pqueue data : " << pqueue.dequeue()->toString() << endl;
-    }
-
-    return NULL;
-}
-
-
-
-PriorityQueue<HuffmanNode*> getPQueue(const Map<int, int>& freqTable){
     PriorityQueue<HuffmanNode*> pqueue;
     for(int key : freqTable){
         int priority = freqTable.get(key);
         HuffmanNode* node = new HuffmanNode(key, priority);
         pqueue.add(node, priority);
     }
-    return pqueue;
+
+    return buildTreeHelper(pqueue);
 }
+
+HuffmanNode* buildTreeHelper(PriorityQueue<HuffmanNode*>& pqueue){
+    if(pqueue.size() == 1){
+        return pqueue.dequeue();
+    }else{
+        HuffmanNode* zero = pqueue.dequeue();
+        HuffmanNode* one = pqueue.dequeue();
+
+        int total = zero->count + one->count;
+        HuffmanNode* baseNode = new HuffmanNode();
+        baseNode->count = total;
+        baseNode->zero = zero;
+        baseNode->one = one;
+
+        pqueue.enqueue(baseNode, total);
+        return buildTreeHelper(pqueue);
+    }
+}
+
 
 Map<int, string> buildEncodingMap(HuffmanNode* encodingTree) {
     // TODO: implement this function
