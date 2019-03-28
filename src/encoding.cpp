@@ -3,6 +3,7 @@
 #include "pqueue.h"
 
 HuffmanNode* buildTreeHelper(PriorityQueue<HuffmanNode*>& pqueue);
+void buildMapHelpr(HuffmanNode* node, Map<int, string> &encodingMap, string &path);
 
 // STEP : 01
 Map<int, int> buildFrequencyTable(istream& input) {
@@ -57,12 +58,30 @@ HuffmanNode* buildTreeHelper(PriorityQueue<HuffmanNode*>& pqueue){
     }
 }
 
-
+// STEP : 03
 Map<int, string> buildEncodingMap(HuffmanNode* encodingTree) {
-    // TODO: implement this function
-    Map<int, string> encodingMap;   // this is just a placeholder so it will compile
-    return encodingMap;             // this is just a placeholder so it will compile
+    Map<int, string> encodingMap;
+    string path = "";
+    buildMapHelpr(encodingTree, encodingMap, path);
+    return encodingMap;
 }
+
+void buildMapHelpr(HuffmanNode* node, Map<int, string> &encodingMap, string &path){
+    if(node->isLeaf()){
+        encodingMap.put(node->character, path);
+    }else{
+        path = path + "0";
+        buildMapHelpr(node->zero, encodingMap, path);
+        path.pop_back();
+        path = path + "1";
+        buildMapHelpr(node->one, encodingMap, path);
+        path.pop_back();
+    }
+}
+
+
+
+
 
 void encodeData(istream& input, const Map<int, string>& encodingMap, obitstream& output) {
     // TODO: implement this function
