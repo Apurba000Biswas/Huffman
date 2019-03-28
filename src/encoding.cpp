@@ -79,13 +79,22 @@ void buildMapHelpr(HuffmanNode* node, Map<int, string> &encodingMap, string &pat
     }
 }
 
-
-
-
-
+// STEP : 04
 void encodeData(istream& input, const Map<int, string>& encodingMap, obitstream& output) {
-    // TODO: implement this function
+    while(true){
+        int key = input.get();
+        if(key == -1)break;
+        string encodedChar = encodingMap.get(key);
+        for(int i=0; i<encodedChar.size(); i++){
+            if(encodedChar[i] == '0'){
+                output.writeBit(0);
+            }else{
+                output.writeBit(1);
+            }
+        }
+    }
 }
+
 
 void decodeData(ibitstream& input, HuffmanNode* encodingTree, ostream& output) {
     // TODO: implement this function
