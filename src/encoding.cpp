@@ -4,6 +4,7 @@
 
 HuffmanNode* buildTreeHelper(PriorityQueue<HuffmanNode*>& pqueue);
 void buildMapHelpr(HuffmanNode* node, Map<int, string> &encodingMap, string &path);
+void writeToOutput(string encodedChar, obitstream& output);
 
 // STEP : 01
 Map<int, int> buildFrequencyTable(istream& input) {
@@ -85,13 +86,16 @@ void encodeData(istream& input, const Map<int, string>& encodingMap, obitstream&
         int key = input.get();
         if(key == -1)break;
         string encodedChar = encodingMap.get(key);
-        for(int i=0; i<encodedChar.size(); i++){
-            if(encodedChar[i] == '0'){
-                output.writeBit(0);
-            }else{
-                output.writeBit(1);
-            }
-        }
+        writeToOutput(encodedChar, output);
+    }
+    string encodedEOF = encodingMap.get(PSEUDO_EOF);
+    writeToOutput(encodedEOF, output);
+}
+
+void writeToOutput(string encodedChar, obitstream& output){
+    for(int i=0; i<encodedChar.size(); i++){
+        int bit = (encodedChar[i] == '0')? 0 : 1;
+        output.writeBit(bit);
     }
 }
 
