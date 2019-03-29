@@ -130,12 +130,12 @@ bool decodeDataHelper(ibitstream& input, HuffmanNode* node, ostream& output){
 
 
 
-
+// Overall compressing
 void compress(istream& input, obitstream& output) {
     // step 01 build frequencyTable
     Map<int, int> freqTable = buildFrequencyTable(input);
-    // set the map as heading
-    output << freqTable;
+    output << freqTable; // set heading
+
     // step 02 build encoding tree
     HuffmanNode* encodingTreeRoot = buildEncodingTree(freqTable);
 
@@ -147,8 +147,18 @@ void compress(istream& input, obitstream& output) {
     encodeData(input, encodingMap, output);
 }
 
+
+// Overall decompressing
 void decompress(ibitstream& input, ostream& output) {
-    // TODO: implement this function
+    // step 01 get the frequency map from input
+    Map<int, int> freqTable;
+    input >> freqTable;
+
+    // step 02 build huffman tree from freqTable
+    HuffmanNode* encodingTreeRoot = buildEncodingTree(freqTable);
+
+    // step 03 decode data
+    decodeData(input, encodingTreeRoot, output);
 }
 
 void freeTree(HuffmanNode* node) {
