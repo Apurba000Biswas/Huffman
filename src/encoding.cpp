@@ -5,6 +5,7 @@
 HuffmanNode* buildTreeHelper(PriorityQueue<HuffmanNode*>& pqueue);
 void buildMapHelpr(HuffmanNode* node, Map<int, string> &encodingMap, string &path);
 void writeToOutput(string encodedChar, obitstream& output);
+bool decodeDataHelper(ibitstream& input, HuffmanNode* node, ostream& output, HuffmanNode* root);
 
 // STEP : 01
 Map<int, int> buildFrequencyTable(istream& input) {
@@ -99,10 +100,34 @@ void writeToOutput(string encodedChar, obitstream& output){
     }
 }
 
-
+// STEP : 05
 void decodeData(ibitstream& input, HuffmanNode* encodingTree, ostream& output) {
-    // TODO: implement this function
+    HuffmanNode* root = encodingTree;
+    while (true) {
+        if(decodeDataHelper(input, encodingTree, output, root)) break;
+    }
 }
+
+bool decodeDataHelper(ibitstream& input, HuffmanNode* node, ostream& output, HuffmanNode* root){
+    if(node->isLeaf()){
+        if(node->character == PSEUDO_EOF) return true;
+        output.put(node->character);
+        node = root;
+        return false;
+    }else{
+        int bit = input.readBit();
+        if(bit == 0){
+            return decodeDataHelper(input, node->zero, output, root);
+        }else {
+            return decodeDataHelper(input, node->one, output, root);
+        }
+    }
+}
+
+
+
+
+
 
 void compress(istream& input, obitstream& output) {
     // TODO: implement this function
