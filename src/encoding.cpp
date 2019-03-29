@@ -29,7 +29,6 @@ Map<int, int> buildFrequencyTable(istream& input) {
     return freqTable;
 }
 
-
 // STEP : 02
 HuffmanNode* buildEncodingTree(const Map<int, int>& freqTable) {
 
@@ -126,10 +125,6 @@ bool decodeDataHelper(ibitstream& input, HuffmanNode* node, ostream& output){
     }
 }
 
-
-
-
-
 // Overall compressing
 void compress(istream& input, obitstream& output) {
     // step 01 build frequencyTable
@@ -145,6 +140,8 @@ void compress(istream& input, obitstream& output) {
     // step 04 encode data
     rewindStream(input);
     encodeData(input, encodingMap, output);
+
+    freeTree(encodingTreeRoot);
 }
 
 
@@ -159,8 +156,21 @@ void decompress(ibitstream& input, ostream& output) {
 
     // step 03 decode data
     decodeData(input, encodingTreeRoot, output);
+
+    freeTree(encodingTreeRoot);
 }
 
+
+// delete the tree
 void freeTree(HuffmanNode* node) {
-    // TODO: implement this function
+    // post order traversing
+    if(node == nullptr) return;
+    if(node->isLeaf()){
+        delete node;
+    }else{
+        freeTree(node->zero);
+        freeTree(node->one);
+        delete node;
+    }
 }
+
