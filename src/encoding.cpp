@@ -1,6 +1,7 @@
 
 #include "encoding.h"
 #include "pqueue.h"
+#include "filelib.h"
 
 HuffmanNode* buildTreeHelper(PriorityQueue<HuffmanNode*>& pqueue);
 void buildMapHelpr(HuffmanNode* node, Map<int, string> &encodingMap, string &path);
@@ -102,8 +103,9 @@ void writeToOutput(string encodedChar, obitstream& output){
 
 // STEP : 05
 void decodeData(ibitstream& input, HuffmanNode* encodingTree, ostream& output) {
-    while (true) {
-        if(decodeDataHelper(input, encodingTree, output)) break;
+    while (!input.fail()) {
+        if(decodeDataHelper(input, encodingTree, output))
+            break;
     }
 }
 
@@ -113,10 +115,13 @@ bool decodeDataHelper(ibitstream& input, HuffmanNode* node, ostream& output){
         output.put(node->character);
         return false;
     }else{
-        if(input.readBit() == 0){
+        int bit = input.readBit();
+        if( bit== 0){
             return decodeDataHelper(input, node->zero, output);
-        }else {
+        }else if(bit == 1) {
             return decodeDataHelper(input, node->one, output);
+        }else{
+            return true;
         }
     }
 }
@@ -127,7 +132,19 @@ bool decodeDataHelper(ibitstream& input, HuffmanNode* node, ostream& output){
 
 
 void compress(istream& input, obitstream& output) {
-    // TODO: implement this function
+    // step 01 build frequencyTable
+    Map<int, int> freqTable = buildFrequencyTable(input);
+    // set the map as heading
+    output << freqTable;
+    // step 02 build encoding tree
+    HuffmanNode* encodingTreeRoot = buildEncodingTree(freqTable);
+
+    // step 03 build encoding map
+    Map<int, string> encodingMap = buildEncodingMap(encodingTreeRoot);
+
+    // step 04 encode data
+    rewindStream(input);
+    encodeData(input, encodingMap, output);
 }
 
 void decompress(ibitstream& input, ostream& output) {
